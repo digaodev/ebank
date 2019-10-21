@@ -1,33 +1,44 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import * as Yup from 'yup';
+import { Form, Input } from '@rocketseat/unform';
 
-import { MdLockOutline } from 'react-icons/md';
+import { useAuth } from '../../context/auth';
+import { Container, Content, Icon } from './styles';
 
-import { Container, Content, Form, Input } from './styles';
+const schema = Yup.object().shape({
+  username: Yup.string().required('O usuário é obrigatório'),
+  password: Yup.string().required('A senha é obrigatória'),
+});
 
-export default function SignIn() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+function SignIn({ history }) {
+  const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
-  function handleSubmit(ev) {
-    ev.preventDefault();
+  async function handleSubmit(formData) {
+    setIsLoading(true);
 
-    console.log({ ev });
+    const token = await login(formData);
+
+    if (token) history.push('/dashboard');
+
+    setIsLoading(false);
   }
 
   return (
     <Container>
       <Content>
-        <MdLockOutline size={32} color="#fff" />
+        <Icon size={32} />
+        <h1>Bem vindo ao EBANK</h1>
 
-        <form onSubmit={handleSubmit}>
-          <input
+        <Form schema={schema} onSubmit={handleSubmit}>
+          <Input
             type="username"
             name="username"
             placeholder="informe seu usuário"
           />
-          <input
+          <Input
             type="password"
             name="password"
             placeholder="informe sua senha"
@@ -36,8 +47,14 @@ export default function SignIn() {
           <button type="submit">
             {isLoading ? 'Carregando...' : 'Acessar'}
           </button>
-        </form>
+        </Form>
       </Content>
     </Container>
   );
 }
+
+SignIn.propTypes = {
+  history: PropTypes.func.isRequired,
+};
+
+export default withRouter(SignIn);
