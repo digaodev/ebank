@@ -1,18 +1,15 @@
 import { createGlobalStyle } from 'styled-components';
 
+import 'react-toastify/dist/ReactToastify.css';
+
 export default createGlobalStyle`
   @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,700&display=swap');
 
   * {
     margin: 0;
     padding: 0;
-    /* outline: 0; */
     box-sizing: border-box;
   }
-
-  /* *:focus {
-    outline: 0;
-  } */
 
   html, body, #root {
     height: 100%;
@@ -23,8 +20,8 @@ export default createGlobalStyle`
   }
 
   body, input, button {
-    font-family: 16px 'IBM Plex Sans', sans-serif;
-    font-size: ${props => props.theme}
+    font-family: ${props => props.theme.fonts.body};
+    font-size: ${props => props.theme.fontSizes[0]};
   }
 
   a {

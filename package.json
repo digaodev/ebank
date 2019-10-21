@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@rocketseat/unform": "^1.6.1",
     "axios": "^0.19.0",
     "prop-types": "^15.7.2",
     "react": "^16.10.2",
@@ -10,7 +11,9 @@
     "react-icons": "^3.7.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0",
-    "styled-components": "^4.4.0"
+    "react-toastify": "^5.4.0",
+    "styled-components": "^4.4.0",
+    "yup": "^0.27.0"
   },
   "scripts": {
     "start": "react-scripts start",
