@@ -1,13 +1,25 @@
 import React from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { ThemeProvider } from 'styled-components';
+import { ToastContainer } from 'react-toastify';
 
 import GlobalStyles from './styles/global';
+import theme from './config/theme';
+
+import { AuthProvider } from './context/auth';
+import Routes from './routes';
 
 function App() {
   return (
-    <div className="App">
-      <GlobalStyles />
-      <header className="App-header" />
-    </div>
+    <Router>
+      <ThemeProvider theme={theme}>
+        <GlobalStyles />
+        <ToastContainer autoClose={3000} />
+        <AuthProvider>
+          <Routes />
+        </AuthProvider>
+      </ThemeProvider>
+    </Router>
   );
 }
 

@@ -10,9 +10,9 @@ export default function RouteWrapper({
   isPrivate,
   ...rest
 }) {
-  const { isSignedIn } = useAuth();
+  const auth = useAuth();
 
-  console.log({ isSignedIn });
+  const isSignedIn = !!auth.token;
 
   if (!isSignedIn && isPrivate) {
     return <Redirect to="/" />;
