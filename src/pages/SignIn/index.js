@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
+import { useHistory } from 'react-router-dom';
 import * as Yup from 'yup';
 import { Form, Input } from '@rocketseat/unform';
 
 import { useAuth } from '../../context/auth';
+
 import { Container, Content, Icon } from './styles';
 
 const schema = Yup.object().shape({
@@ -12,8 +12,9 @@ const schema = Yup.object().shape({
   password: Yup.string().required('A senha é obrigatória'),
 });
 
-function SignIn({ history }) {
+function SignIn() {
   const { login } = useAuth();
+  const history = useHistory();
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(formData) {
@@ -21,9 +22,9 @@ function SignIn({ history }) {
 
     const token = await login(formData);
 
-    if (token) history.push('/dashboard');
-
-    setIsLoading(false);
+    if (token) {
+      history.push('/dashboard');
+    }
   }
 
   return (
@@ -53,8 +54,4 @@ function SignIn({ history }) {
   );
 }
 
-SignIn.propTypes = {
-  history: PropTypes.func.isRequired,
-};
-
-export default withRouter(SignIn);
+export default SignIn;

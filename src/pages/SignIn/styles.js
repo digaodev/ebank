@@ -20,7 +20,7 @@ export const Container = styled.div`
 `;
 
 export const Content = styled.div`
-  background: ${props => props.theme.colors.white};
+  background: ${props => props.theme.colors.background};
   border-radius: ${props => props.theme.space[1]};
   box-shadow: ${props => props.theme.shadows.card};
   max-width: 325px;
