@@ -33,18 +33,13 @@ export const Content = styled.div`
   }
 `;
 
-export const DropDownButton = styled.button`
-  border: 0;
-  background: transparent;
-  padding: 0 ${props => props.theme.space[1]};
-`;
-
 export const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
 
   background: ${props => props.theme.colors.white};
+  cursor: pointer;
   margin: ${props => props.theme.space[1]} 0;
   padding: 0 ${props => props.theme.space[2]};
   padding-left: ${props => props.theme.space[3]};

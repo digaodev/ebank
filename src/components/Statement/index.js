@@ -10,7 +10,6 @@ import {
   Container,
   Content,
   Header,
-  DropDownButton,
   DropDownIcon,
   DropUpIcon,
   ExpansionPanel,
@@ -36,20 +35,14 @@ export default function Statement({ data }) {
   return (
     <Container>
       <Content>
-        <Header>
+        <Header onClick={toggleOpenPanel}>
           <p>{formattedDate}</p>
 
           <p>{OpTypes[data.operationType]}</p>
 
           <p className="amount">{formatPrice(data.convertedAmount)}</p>
 
-          <DropDownButton onClick={toggleOpenPanel}>
-            {isPanelOpen ? (
-              <DropUpIcon size={40} />
-            ) : (
-              <DropDownIcon size={40} />
-            )}
-          </DropDownButton>
+          {isPanelOpen ? <DropUpIcon size={40} /> : <DropDownIcon size={40} />}
         </Header>
 
         {isPanelOpen && (
