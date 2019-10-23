@@ -41,7 +41,7 @@ export default function Statement({ data }) {
 
           <p>{OpTypes[data.operationType]}</p>
 
-          <p className="amount">{formatPrice(data.amount)}</p>
+          <p className="amount">{formatPrice(data.convertedAmount)}</p>
 
           <DropDownButton onClick={toggleOpenPanel}>
             {isPanelOpen ? (
@@ -58,7 +58,7 @@ export default function Statement({ data }) {
               <div>
                 <p className="sender">{data.otherInfo.senderAccount}</p>
                 <p className="description">{data.otherInfo.description}</p>
-                <p className="amount">{formatPrice(data.amount)}</p>
+                <p className="amount">{formatPrice(data.convertedAmount)}</p>
               </div>
             </Details>
             <Location>
@@ -82,5 +82,6 @@ Statement.propTypes = {
       senderAccount: PropTypes.string,
       description: PropTypes.string,
     }),
+    convertedAmount: PropTypes.number,
   }).isRequired,
 };

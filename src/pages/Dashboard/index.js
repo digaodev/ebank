@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-date-picker';
 
 import api from '../../services/api';
-import { formatPrice } from '../../util/format';
+import { formatPrice, convertFromCents } from '../../util/format';
 import Header from '../../components/Header';
 import Statement from '../../components/Statement';
 
@@ -18,16 +18,16 @@ import {
   BalanceLoading,
 } from './styles';
 
-const fakeBalance = {
-  balance: 30578,
-  blockedBalance: 0,
-};
+// const fakeBalance = {
+//   balance: 30578,
+//   blockedBalance: 0,
+// };
 
 const fakeStatements = [
   {
     id: Math.random(),
-    amount: 1234,
-    balance: 1234,
+    amount: 4015,
+    balance: 4015,
     createdAt: '2019-11-18T16:07:42.000Z',
     operationType: 'RECEIVED_TRANSFERENCE',
     otherInfo: {
@@ -94,11 +94,16 @@ export default function Dashboard() {
 
   useEffect(() => {
     async function loadBalance() {
-      // const { data } = await api.get('/account/balance');
+      const { data } = await api.get('/account/balance');
 
-      setBalance(fakeBalance.balance);
+      setBalance(convertFromCents(data.balance));
 
-      setStatements(fakeStatements);
+      const convertedStatements = fakeStatements.map(stmt => ({
+        ...stmt,
+        convertedAmount: convertFromCents(stmt.amount),
+      }));
+
+      setStatements(convertedStatements);
     }
 
     loadBalance();
