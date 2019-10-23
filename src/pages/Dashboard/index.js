@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-date-picker';
 
-import api from '../../services/api';
+import api, { sessionStorageKey } from '../../services/api';
 import { formatPrice, convertFromCents } from '../../util/format';
 import Header from '../../components/Header';
 import Statement from '../../components/Statement';
@@ -94,7 +94,12 @@ export default function Dashboard() {
 
   useEffect(() => {
     async function loadBalance() {
-      const { data } = await api.get('/account/balance');
+      const token = window.sessionStorage.getItem(sessionStorageKey);
+      const { data } = await api.get('/account/balance', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       setBalance(convertFromCents(data.balance));
 

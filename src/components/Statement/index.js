@@ -19,7 +19,7 @@ import {
 } from './styles';
 
 export default function Statement({ data }) {
-  const [isPanelOpen, setIsPanelOpen] = useState(true);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
 
   const formattedDate = format(parseISO(data.createdAt), 'dd MMM yyyy', {
     locale: ptBR,
@@ -82,6 +82,6 @@ Statement.propTypes = {
       senderAccount: PropTypes.string,
       description: PropTypes.string,
     }),
-    convertedAmount: PropTypes.number,
+    convertedAmount: PropTypes.string,
   }).isRequired,
 };

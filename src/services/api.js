@@ -4,7 +4,4 @@ export const sessionStorageKey = '__ebank_token__';
 
 export default axios.create({
   baseURL: 'https://apidev.ewally.com.br',
-  headers: {
-    Authorization: `Bearer ${window.sessionStorage.getItem(sessionStorageKey)}`,
-  },
 });

@@ -22,7 +22,6 @@ function useAuthProvider() {
   function handleUserResponse({ data }) {
     setToken(data.token);
     window.sessionStorage.setItem(sessionStorageKey, data.token);
-    api.defaults.headers.common.Authorization = `Bearer ${token}`;
 
     return data.token;
   }
