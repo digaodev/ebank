@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
 
-import api from '../services/api';
-
-const sessionStorageKey = '__ebank_token__';
+import api, { sessionStorageKey } from '../services/api';
 
 const AuthContext = React.createContext();
 
@@ -17,15 +15,15 @@ function useAuth() {
 }
 
 function useAuthProvider() {
-  function getToken() {
-    return window.sessionStorage.getItem(sessionStorageKey);
-  }
-
-  const [token, setToken] = useState(getToken());
+  const [token, setToken] = useState(
+    window.sessionStorage.getItem(sessionStorageKey)
+  );
 
   function handleUserResponse({ data }) {
     setToken(data.token);
     window.sessionStorage.setItem(sessionStorageKey, data.token);
+    // api.defaults.headers.common.Authorization = `Bearer ${token}`;
+
     return data.token;
   }
   function login({ username, password }) {
@@ -36,22 +34,12 @@ function useAuthProvider() {
   }
 
   function logout() {
-    setToken(false);
+    setToken(null);
     window.sessionStorage.removeItem(sessionStorageKey);
+    api.defaults.headers.common.Authorization = '';
     return Promise.resolve();
   }
 
-  useEffect(() => {
-    const tokenFromSession = getToken();
-
-    if (tokenFromSession) {
-      setToken(tokenFromSession);
-    } else {
-      setToken(null);
-    }
-  }, [token]);
-
-  // Return the user object and auth methods
   return {
     token,
     login,
