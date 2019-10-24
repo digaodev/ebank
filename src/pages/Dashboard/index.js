@@ -59,7 +59,7 @@ export default function Dashboard() {
 
     // const { data } = await api.get('/b2b/statement');
 
-    setStatements(fakeStatements);
+    // setStatements(data);
   }
 
   function onChangeFromDate(date) {
