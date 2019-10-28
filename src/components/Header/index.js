@@ -1,12 +1,30 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useAuth } from '../../context/auth';
+import api, { sessionStorageKey } from '../../services/api';
 
 import { Container, Content, Profile, LogoIcon, LogoutIcon } from './styles';
 
 export default function Header() {
+  const [userName, setUserName] = useState(null);
   const { logout } = useAuth();
+
+  useEffect(() => {
+    async function getUserInfo() {
+      const token = window.sessionStorage.getItem(sessionStorageKey);
+
+      const { data } = await api.get('/b2b/owner', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setUserName(data.userData.fullName.split(' ')[0]);
+    }
+
+    getUserInfo();
+  }, []);
 
   return (
     <Container>
@@ -20,6 +38,7 @@ export default function Header() {
         </nav>
 
         <aside>
+          {userName && <p>{userName}</p>}
           <Profile>
             <div>
               <img

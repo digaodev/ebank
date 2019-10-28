@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-date-picker';
+import { format, parseISO } from 'date-fns';
 
 import api, { sessionStorageKey } from '../../services/api';
 import { formatPrice, convertFromCents } from '../../util/format';
 import Header from '../../components/Header';
 import Statement from '../../components/Statement';
+import BarGraph from '../../components/BarGraph';
 
 import {
   Container,
@@ -17,11 +19,6 @@ import {
   DownArrowIcon,
   BalanceLoading,
 } from './styles';
-
-// const fakeBalance = {
-//   balance: 30578,
-//   blockedBalance: 0,
-// };
 
 const fakeStatements = [
   {
@@ -50,6 +47,7 @@ const fakeStatements = [
 
 export default function Dashboard() {
   const [balance, setBalance] = useState(null);
+  const [barData, setBarData] = useState([]);
   const [statements, setStatements] = useState(null);
   const [fromDate, setFromDate] = useState();
   const [toDate, setToDate] = useState();
@@ -114,6 +112,34 @@ export default function Dashboard() {
     loadBalance();
   }, []);
 
+  useEffect(() => {
+    async function loadBarData() {
+      const token = window.sessionStorage.getItem(sessionStorageKey);
+      const { data } = await api.get('/b2b/balance/graph', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          initialDate: '2019-01-01',
+          finalDate: '2019-01-15',
+        },
+      });
+
+      const formattedBarData = data.items.map(item => {
+        const newDate = format(parseISO(item.transactionDate), 'd');
+        const newValue =
+          item.transactionType === 'DEBIT' ? item.value * -1 : item.value;
+
+        return { ...item, value: newValue, transactionDate: newDate };
+      });
+
+      console.log(formattedBarData);
+      setBarData(formattedBarData);
+    }
+
+    loadBarData();
+  }, []);
+
   return (
     <Container>
       <Header />
@@ -127,6 +153,8 @@ export default function Dashboard() {
       </Aside>
 
       <Content>
+        <BarGraph data={barData} />
+
         <SearchCard>
           <form>
             <p>Listar extrato de</p>
