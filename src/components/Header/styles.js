@@ -21,6 +21,10 @@ export const Container = styled.div`
 
   background: ${props => props.theme.colors.white};
   box-shadow: ${props => props.theme.shadows.sm};
+
+  @media (max-width: ${props => props.theme.breakpoints[2]}) {
+    padding: 0 16px;
+  }
 `;
 
 export const Content = styled.div`
@@ -61,12 +65,26 @@ export const Content = styled.div`
   aside {
     display: flex;
     align-items: center;
+
+    p {
+      color: ${props => props.theme.colors.darkgray};
+      font-size: 14px;
+      padding: 0 ${props => props.theme.space[2]};
+
+      @media (max-width: ${props => props.theme.breakpoints[0]}) {
+        display: none;
+      }
+    }
   }
 `;
 
 export const Profile = styled.div`
   display: flex;
   align-items: center;
+
+  /* @media (max-width: ${props => props.theme.breakpoints[2]}) {
+    display: none;
+  } */
 
   button {
     display: flex;

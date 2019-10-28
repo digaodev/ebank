@@ -16,6 +16,11 @@ export const Container = styled.div`
 
   background: ${props => props.theme.colors.background};
   min-height: 100vh;
+  padding: 16px;
+
+  @media (max-width: ${props => props.theme.breakpoints[1]}) {
+    flex-direction: column;
+  }
 `;
 
 const balanceloadingAnimation = keyframes`
@@ -68,11 +73,18 @@ export const Aside = styled.div`
   display: flex;
   justify-content: space-between;
 
-  background: ${props => props.theme.colors.background};
-  margin: 100px 24px 0;
+  margin: 100px 32px 0 32px;
+
+  @media (max-width: ${props => props.theme.breakpoints[1]}) {
+    margin: 80px auto 0 auto;
+  }
 
   aside {
     position: fixed;
+
+    @media (max-width: ${props => props.theme.breakpoints[1]}) {
+      position: static;
+    }
 
     h3 {
       color: ${props => props.theme.colors.darkgray};
@@ -97,6 +109,11 @@ export const Content = styled.div`
   margin: 100px auto;
   max-width: 800px;
 
+  @media (max-width: ${props => props.theme.breakpoints[1]}) {
+    margin: 32px auto;
+    width: 100%;
+  }
+
   > p {
     margin-bottom: ${props => props.theme.space[2]};
   }
@@ -111,8 +128,20 @@ export const SearchCard = styled.section`
 
   form {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-between;
     align-items: center;
+
+    @media (max-width: ${props => props.theme.breakpoints[1]}) {
+      flex-direction: column;
+
+      > * {
+        margin: 8px 0;
+      }
+
+      > *:last-child {
+        margin-top: 16px;
+      }
+    }
 
     > p {
       color: ${props => props.theme.colors.text};

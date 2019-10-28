@@ -43,7 +43,7 @@ export default {
     warn: '#FFDD22',
   },
   space: [0, '4px', '8px', '16px', '24px', '32px', '48px', '64px', '128px'],
-  breakpoints: ['32em', '48em', '64em', '80em'],
+  breakpoints: ['512px', '1100px', '1440px'],
   radii: [0, 3, 6],
   shadows: {
     card: '0 0 4px rgba(0, 0, 0, .125)',
