@@ -3,4 +3,4 @@ export const { format: formatPrice } = new Intl.NumberFormat('pt-br', {
   currency: 'BRL',
 });
 
-export const convertFromCents = amount => (amount / 100).toFixed(2);
+export const convertFromCents = amount => parseFloat((amount / 100).toFixed(2));
