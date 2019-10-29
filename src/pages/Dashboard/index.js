@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-date-picker';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, subDays } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 import api, { sessionStorageKey } from '../../services/api';
 import { formatPrice, convertFromCents } from '../../util/format';
+import OpTypes from '../../util/operationType';
+
 import Header from '../../components/Header';
 import Statement from '../../components/Statement';
 import BarGraph from '../../components/BarGraph';
@@ -20,44 +23,59 @@ import {
   BalanceLoading,
 } from './styles';
 
-const fakeStatements = [
-  {
-    id: Math.random(),
-    amount: 4015,
-    balance: 4015,
-    createdAt: '2019-11-18T16:07:42.000Z',
-    operationType: 'RECEIVED_TRANSFERENCE',
-    otherInfo: {
-      senderAccount: '00714671000114',
-      description: 'Money from dinner last week',
-    },
-  },
-  {
-    id: Math.random(),
-    amount: 200,
-    balance: 200,
-    createdAt: '2019-11-18T16:07:42.000Z',
-    operationType: 'RECEIVED_TRANSFERENCE',
-    otherInfo: {
-      senderAccount: '00714671000114',
-      description: 'Money from delicious candy',
-    },
-  },
-];
-
 export default function Dashboard() {
   const [balance, setBalance] = useState(null);
   const [barData, setBarData] = useState([]);
-  const [statements, setStatements] = useState(null);
+  const [statements, setStatements] = useState([]);
   const [fromDate, setFromDate] = useState();
   const [toDate, setToDate] = useState();
 
   async function searchStatementsByDate(ev) {
     ev.preventDefault();
 
-    // const { data } = await api.get('/b2b/statement');
+    const token = window.sessionStorage.getItem(sessionStorageKey);
+    const barResponse = await api.get('/b2b/balance/graph', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        initialDate: format(fromDate, 'yyyy-MM-dd'),
+        finalDate: format(toDate, 'yyyy-MM-dd'),
+      },
+    });
 
-    // setStatements(data);
+    const formattedBarData = barResponse.data.items.map(item => {
+      const newDate = format(parseISO(item.transactionDate), 'd');
+      const newValue =
+        item.transactionType === 'DEBIT' ? item.value * -1 : item.value;
+
+      return {
+        ...item,
+        value: convertFromCents(newValue),
+        transactionDate: newDate,
+      };
+    });
+
+    setBarData(formattedBarData);
+
+    const stmtResponse = await api.get('/b2b/statement', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        initialDate: format(fromDate, 'yyyy-MM-dd'),
+        finalDate: format(toDate, 'yyyy-MM-dd'),
+      },
+    });
+
+    const convertedStatements = stmtResponse.data.statement.map(stmt => ({
+      ...stmt,
+      amount: convertFromCents(stmt.amount),
+      createdAt: format(parseISO(stmt.createdAt), 'd MMM', { locale: ptBR }),
+      operationType: OpTypes[stmt.operationType],
+    }));
+
+    setStatements(convertedStatements);
   }
 
   function onChangeFromDate(date) {
@@ -90,6 +108,13 @@ export default function Dashboard() {
     );
   }
 
+  function renderStatements() {
+    return (
+      statements &&
+      statements.map(stmt => <Statement key={stmt.id} data={stmt} />)
+    );
+  }
+
   useEffect(() => {
     async function loadBalance() {
       const token = window.sessionStorage.getItem(sessionStorageKey);
@@ -100,13 +125,6 @@ export default function Dashboard() {
       });
 
       setBalance(convertFromCents(data.balance));
-
-      const convertedStatements = fakeStatements.map(stmt => ({
-        ...stmt,
-        convertedAmount: convertFromCents(stmt.amount),
-      }));
-
-      setStatements(convertedStatements);
     }
 
     loadBalance();
@@ -120,8 +138,8 @@ export default function Dashboard() {
           Authorization: `Bearer ${token}`,
         },
         params: {
-          initialDate: '2019-01-01',
-          finalDate: '2019-01-15',
+          initialDate: format(subDays(new Date(), 7), 'yyyy-MM-dd'),
+          finalDate: format(new Date(), 'yyyy-MM-dd'),
         },
       });
 
@@ -130,14 +148,44 @@ export default function Dashboard() {
         const newValue =
           item.transactionType === 'DEBIT' ? item.value * -1 : item.value;
 
-        return { ...item, value: newValue, transactionDate: newDate };
+        return {
+          ...item,
+          value: convertFromCents(newValue),
+          transactionDate: newDate,
+        };
       });
 
-      console.log(formattedBarData);
       setBarData(formattedBarData);
     }
 
     loadBarData();
+  }, []);
+
+  useEffect(() => {
+    async function loadStatements() {
+      const token = window.sessionStorage.getItem(sessionStorageKey);
+
+      const { data } = await api.get('/b2b/statement', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          initialDate: format(subDays(new Date(), 7), 'yyyy-MM-dd'),
+          finalDate: format(new Date(), 'yyyy-MM-dd'),
+        },
+      });
+
+      const convertedStatements = data.statement.map(stmt => ({
+        ...stmt,
+        amount: convertFromCents(stmt.amount),
+        createdAt: format(parseISO(stmt.createdAt), 'd MMM', { locale: ptBR }),
+        operationType: OpTypes[stmt.operationType],
+      }));
+
+      setStatements(convertedStatements);
+    }
+
+    loadStatements();
   }, []);
 
   return (
@@ -153,7 +201,7 @@ export default function Dashboard() {
       </Aside>
 
       <Content>
-        <BarGraph data={barData} />
+        {statements.length > 0 && <BarGraph data={barData} />}
 
         <SearchCard>
           <form>
@@ -182,8 +230,8 @@ export default function Dashboard() {
         </SearchCard>
 
         <p>{statements && `${statements.length} transações encontradas`}</p>
-        {statements &&
-          statements.map(stmt => <Statement key={stmt.id} data={stmt} />)}
+
+        <ul>{renderStatements()}</ul>
       </Content>
     </Container>
   );

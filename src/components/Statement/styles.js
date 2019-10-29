@@ -8,7 +8,7 @@ export const DropUpIcon = styled(MdArrowDropUp)`
   color: ${props => props.theme.colors.cyan};
 `;
 
-export const Container = styled.div`
+export const Container = styled.li`
   background: ${props => props.theme.colors.white};
   box-shadow: ${props => props.theme.shadows.sm};
   margin: ${props => props.theme.space[1]} 0;

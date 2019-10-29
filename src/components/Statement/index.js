@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { parseISO, format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 
-import OpTypes from '../../util/operationType';
 import { formatPrice } from '../../util/format';
 
 import {
@@ -17,15 +14,13 @@ import {
   Location,
 } from './styles';
 
+const STATIC_MAP_URL = 'https://maps.googleapis.com/maps/api/staticmap?';
+
 export default function Statement({ data }) {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
-  const formattedDate = format(parseISO(data.createdAt), 'dd MMM yyyy', {
-    locale: ptBR,
-  });
-
-  const staticMapImage = `https://maps.googleapis.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=13&size=400x200&maptype=roadmap
-  &markers=color:blue%7Clabel:S%7C40.702147,-74.015794
+  const staticMapImage = `${STATIC_MAP_URL}size=400x200&maptype=roadmap
+  &markers=color:red%7C${data.otherInfo.userLatitude},${data.otherInfo.userLongitude}
   &key=${process.env.REACT_APP_GOOGLEMAPSAPI}`;
 
   function toggleOpenPanel() {
@@ -36,11 +31,11 @@ export default function Statement({ data }) {
     <Container>
       <Content>
         <Header onClick={toggleOpenPanel}>
-          <p>{formattedDate}</p>
+          <p>{data.createdAt}</p>
 
-          <p>{OpTypes[data.operationType]}</p>
+          <p>{data.operationType}</p>
 
-          <p className="amount">{formatPrice(data.convertedAmount)}</p>
+          <p className="amount">{formatPrice(data.amount)}</p>
 
           {isPanelOpen ? <DropUpIcon size={40} /> : <DropDownIcon size={40} />}
         </Header>
@@ -49,9 +44,9 @@ export default function Statement({ data }) {
           <ExpansionPanel>
             <Details>
               <div>
-                <p className="sender">{data.otherInfo.senderAccount}</p>
-                <p className="description">{data.otherInfo.description}</p>
-                <p className="amount">{formatPrice(data.convertedAmount)}</p>
+                <p className="sender">{data.otherInfo.otherAccountName}</p>
+                {/* <p className="description">{data.otherInfo.description}</p> */}
+                <p className="amount">{formatPrice(data.amount)}</p>
               </div>
             </Details>
             <Location>
@@ -68,13 +63,12 @@ Statement.propTypes = {
   data: PropTypes.shape({
     id: PropTypes.number,
     amount: PropTypes.number,
-    balance: PropTypes.number,
     createdAt: PropTypes.string,
     operationType: PropTypes.string,
     otherInfo: PropTypes.shape({
-      senderAccount: PropTypes.string,
-      description: PropTypes.string,
+      otherAccountName: PropTypes.string,
+      userLatitude: PropTypes.number,
+      userLongitude: PropTypes.number,
     }),
-    convertedAmount: PropTypes.string,
   }).isRequired,
 };
